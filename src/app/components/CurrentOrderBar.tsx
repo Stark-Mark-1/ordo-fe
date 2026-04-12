@@ -101,7 +101,7 @@ function OrderSuccessOverlay({ onDismiss }: { onDismiss: () => void }) {
 
 /* ─── Main Component ────────────────────────────────────────────────────── */
 export default function CurrentOrderBar() {
-  const { orderItems, totalItems, totalPrice, updateQuantity, clearOrder } = useOrder();
+  const { orderItems, totalItems, totalPrice, updateQuantity, clearOrder, createOrder } = useOrder();
   const [expanded, setExpanded] = useState(false);
   const [animatingIn, setAnimatingIn] = useState(false);
   const [prevCount, setPrevCount] = useState(0);
@@ -117,13 +117,14 @@ export default function CurrentOrderBar() {
   }, [totalItems]);
 
   const handleCreateOrder = () => {
+    createOrder();        // snapshot → pastOrders, clears current
     setExpanded(false);
     setShowSuccess(true);
   };
 
   const handleSuccessDismiss = () => {
     setShowSuccess(false);
-    clearOrder();
+    // order already cleared by createOrder()
   };
 
   if (totalItems === 0 && !showSuccess) return null;

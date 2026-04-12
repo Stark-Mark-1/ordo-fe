@@ -9,7 +9,16 @@ export interface OrderItem {
   quantity: number;
 }
 
+export interface PastOrder {
+  orderId: string;
+  createdAt: Date;
+  items: OrderItem[];
+  totalItems: number;
+  totalPrice: number;
+}
+
 interface OrderContextType {
+  // Current order
   orderItems: OrderItem[];
   addItem: (item: Omit<OrderItem, "quantity">) => void;
   removeItem: (id: number) => void;
@@ -17,12 +26,20 @@ interface OrderContextType {
   clearOrder: () => void;
   totalItems: number;
   totalPrice: number;
+  // Past orders
+  pastOrders: PastOrder[];
+  createOrder: () => void; // finalises current order → pastOrders
 }
 
 const OrderContext = createContext<OrderContextType | undefined>(undefined);
 
+function generateOrderId() {
+  return "ORD-" + Math.random().toString(36).slice(2, 8).toUpperCase();
+}
+
 export function OrderProvider({ children }: { children: ReactNode }) {
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
+  const [pastOrders, setPastOrders] = useState<PastOrder[]>([]);
 
   const addItem = (item: Omit<OrderItem, "quantity">) => {
     setOrderItems((prev) => {
@@ -58,6 +75,19 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     0
   );
 
+  const createOrder = () => {
+    if (orderItems.length === 0) return;
+    const snapshot: PastOrder = {
+      orderId: generateOrderId(),
+      createdAt: new Date(),
+      items: [...orderItems],
+      totalItems,
+      totalPrice,
+    };
+    setPastOrders((prev) => [snapshot, ...prev]);
+    setOrderItems([]);
+  };
+
   return (
     <OrderContext.Provider
       value={{
@@ -68,6 +98,8 @@ export function OrderProvider({ children }: { children: ReactNode }) {
         clearOrder,
         totalItems,
         totalPrice,
+        pastOrders,
+        createOrder,
       }}
     >
       {children}
