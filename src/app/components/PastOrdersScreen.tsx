@@ -151,7 +151,7 @@ function OrderCard({ order, onOpen }: { order: PastOrder; onOpen: () => void }) 
 /* ─── Empty state ────────────────────────────────────────────────── */
 function EmptyState() {
   return (
-    <div className="flex flex-col items-center justify-center py-20 text-center">
+    <div className="fixed inset-0 flex flex-col items-center justify-center pointer-events-none z-0 pb-20 text-center">
       <div className="w-16 h-16 bg-muted/10 rounded-full flex items-center justify-center mb-4">
         <ShoppingBag className="w-8 h-8 text-muted/50" />
       </div>
@@ -170,7 +170,7 @@ export default function PastOrdersScreen() {
   const sorted = useMemo(() => sortOrders(pastOrders, sort), [pastOrders, sort]);
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex-1 flex flex-col h-full">
       {/* Header */}
       <div className="mb-6">
         <h1 className="font-heading text-[28px] sm:text-[34px] tracking-tight mb-2 text-text">

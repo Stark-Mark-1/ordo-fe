@@ -19,7 +19,7 @@ export default function MenuBuilderPage() {
       {
         id: Date.now(),
         name: newItemName,
-        price: parseFloat(newItemPrice).toFixed(2),
+        price: newItemPrice,
         icon: "🍽️",
         color: "bg-[#FDF0EA]"
       },
@@ -91,6 +91,7 @@ export default function MenuBuilderPage() {
                 <label className="text-text font-bold text-[13px] ml-1">Item Name</label>
                 <input 
                   type="text" 
+                  required
                   value={newItemName}
                   onChange={(e) => setNewItemName(e.target.value)}
                   placeholder="e.g. Avocado Toast" 
@@ -99,32 +100,24 @@ export default function MenuBuilderPage() {
               </div>
 
               <div className="flex flex-col gap-2">
-                <label className="text-text font-bold text-[13px] ml-1">Price ($)</label>
+                <label className="text-text font-bold text-[13px] ml-1">Price (₹)</label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <span className="text-[#A99790] font-medium">$</span>
+                    <span className="text-[#A99790] font-medium">₹</span>
                   </div>
                   <input 
-                    type="number" 
-                    step="0.01"
+                    type="text" 
+                    inputMode="numeric"
+                    required
                     value={newItemPrice}
-                    onChange={(e) => setNewItemPrice(e.target.value)}
-                    placeholder="0.00" 
+                    onChange={(e) => setNewItemPrice(e.target.value.replace(/[^0-9]/g, ''))}
+                    placeholder="0" 
                     className="w-full h-[52px] pl-[34px] pr-4 bg-[#F8F6F2] rounded-[16px] text-text placeholder:text-[#A99790] focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all font-medium"
                   />
                 </div>
               </div>
 
-              <div className="flex flex-col gap-2 mb-2">
-                <label className="text-text font-bold text-[13px] ml-1">Photo</label>
-                <div className="h-[120px] rounded-[16px] border-2 border-dashed border-muted/30 bg-[#F8F6F2] flex flex-col items-center justify-center cursor-pointer hover:border-primary/40 hover:bg-[#FDF0EA]/50 transition-colors">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#A99790" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mb-2">
-                    <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
-                    <circle cx="12" cy="13" r="3"/>
-                  </svg>
-                  <span className="text-[#A99790] text-[13px] font-medium">Drag & drop or click to upload</span>
-                </div>
-              </div>
+
 
               <button 
                 type="submit"
@@ -149,7 +142,7 @@ export default function MenuBuilderPage() {
                     </div>
                     <div className="flex flex-col gap-1">
                       <span className="font-bold text-[17px] text-text">{item.name}</span>
-                      <span className="font-body text-[15px] font-semibold text-primary">${item.price}</span>
+                      <span className="font-body text-[15px] font-semibold text-primary">₹{item.price}</span>
                     </div>
                   </div>
                   

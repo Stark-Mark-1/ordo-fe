@@ -1,6 +1,24 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function SetupPage() {
+  const router = useRouter();
+  const [storeName, setStoreName] = useState("");
+  const [location, setLocation] = useState("");
+  const [contactNumber, setContactNumber] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    router.push("/menu-builder");
+  };
+
+  const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/[^0-9]/g, '').slice(0, 11);
+    setContactNumber(value);
+  };
   return (
     <main className="min-h-screen w-screen flex items-center justify-center relative bg-background">
       {/* Back Button */}
@@ -22,13 +40,16 @@ export default function SetupPage() {
         </div>
 
         {/* Form Fields */}
-        <form className="flex flex-col gap-5">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           
           {/* Store Name */}
           <div className="flex flex-col gap-2">
             <label className="text-text font-bold text-[13px] ml-1">Store Name</label>
             <input 
               type="text" 
+              required
+              value={storeName}
+              onChange={(e) => setStoreName(e.target.value)}
               placeholder="e.g. The Daily Bread" 
               className="w-full h-[56px] px-4 bg-[#F8F6F2] rounded-[16px] text-text placeholder:text-[#A99790] focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all font-medium"
             />
@@ -46,6 +67,9 @@ export default function SetupPage() {
               </div>
               <input 
                 type="text" 
+                required
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
                 placeholder="City, Neighborhood, or Street" 
                 className="w-full h-[56px] pl-[40px] pr-4 bg-[#F8F6F2] rounded-[16px] text-text placeholder:text-[#A99790] focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all font-medium"
               />
@@ -62,21 +86,26 @@ export default function SetupPage() {
                 </svg>
               </div>
               <input 
-                type="tel" 
-                placeholder="(555) 123-4567" 
+                type="text" 
+                inputMode="numeric"
+                required
+                maxLength={11}
+                value={contactNumber}
+                onChange={handleNumberChange}
+                placeholder="1234567890" 
                 className="w-full h-[56px] pl-[40px] pr-4 bg-[#F8F6F2] rounded-[16px] text-text placeholder:text-[#A99790] focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all font-medium"
               />
             </div>
           </div>
 
           {/* Submit Button */}
-          <Link href="/menu-builder" className="w-full h-[56px] bg-primary hover:bg-[#c44e2b] text-white font-medium rounded-full transition-colors flex items-center justify-center gap-2 shadow-[var(--shadow-soft)]">
+          <button type="submit" className="w-full h-[56px] bg-primary hover:bg-[#c44e2b] text-white font-medium rounded-full transition-colors flex items-center justify-center gap-2 shadow-[var(--shadow-soft)]">
             Build Menu
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M5 12h14"/>
               <path d="m12 5 7 7-7 7"/>
             </svg>
-          </Link>
+          </button>
           
         </form>
       </div>

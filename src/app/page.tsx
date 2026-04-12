@@ -1,7 +1,21 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (email) {
+      router.push("/otp");
+    }
+  };
+
   return (
     <main className="h-screen w-screen overflow-hidden flex relative">
       {/* Left Panel (Content) */}
@@ -29,7 +43,7 @@ export default function Home() {
           </p>
 
           {/* Form */}
-          <div className="flex flex-col sm:flex-row gap-4 mb-8">
+          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 mb-8">
             <div className="relative flex-1">
               {/* Mail Icon */}
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -38,17 +52,18 @@ export default function Home() {
                   <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
                 </svg>
               </div>
-              <input type="email" placeholder="chef@kitchen.com" 
+              <input type="email" placeholder="chef@kitchen.com" required
+                     value={email} onChange={(e) => setEmail(e.target.value)}
                      className="w-full h-[56px] pl-[44px] pr-4 bg-surface rounded-[16px] shadow-[var(--shadow-soft)] text-text focus:ring-2 focus:ring-primary border border-transparent focus:border-transparent outline-none transition-all placeholder:text-[#8A736A] placeholder:opacity-70 text-[15px]" />
             </div>
-            <Link href="/otp" className="h-[56px] px-8 bg-primary hover:bg-[#c44e2b] text-white font-medium rounded-full transition-colors flex items-center justify-center gap-2 shadow-[var(--shadow-soft)] flex-shrink-0 text-[15px]">
+            <button type="submit" className="h-[56px] px-8 bg-primary hover:bg-[#c44e2b] text-white font-medium rounded-full transition-colors flex items-center justify-center gap-2 shadow-[var(--shadow-soft)] flex-shrink-0 text-[15px]">
               Get Started 
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14"/>
                 <path d="m12 5 7 7-7 7"/>
               </svg>
-            </Link>
-          </div>
+            </button>
+          </form>
 
           {/* Trust Badge */}
           <div className="flex items-center gap-2 mt-2 text-[14px] text-muted">

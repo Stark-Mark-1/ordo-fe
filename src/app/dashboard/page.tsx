@@ -4,20 +4,12 @@ import { useState } from "react";
 import { PlusSquare, History, User, Search, Plus } from "lucide-react";
 import { useOrder } from "@/context/OrderContext";
 import PastOrdersScreen from "@/app/components/PastOrdersScreen";
+import ProfileScreen from "@/app/components/ProfileScreen";
 
 export default function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("take-orders");
-  const { addItem, orderItems } = useOrder();
-
-  const menuItems = [
-    { id: 1, name: "Avocado Toast",   price: "850" },
-    { id: 2, name: "Iced Latte",      price: "400" },
-    { id: 3, name: "Croissant",       price: "350" },
-    { id: 4, name: "Blueberry Muffin",price: "300" },
-    { id: 5, name: "Egg Sandwich",    price: "650" },
-    { id: 6, name: "Matcha Latte",    price: "450" },
-  ];
+  const { addItem, orderItems, menuItems } = useOrder();
 
   const filteredItems = menuItems.filter((item) =>
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -28,7 +20,7 @@ export default function DashboardPage() {
 
   return (
     <main className="min-h-[100dvh] bg-background relative flex flex-col pt-6 pb-40">
-      <div className="px-6 lg:px-12 w-full max-w-[800px] mx-auto flex-1">
+      <div className="px-6 lg:px-12 w-full max-w-[800px] mx-auto flex-1 flex flex-col">
 
         {/* ── Take Orders Tab ── */}
         {activeTab === "take-orders" && (
@@ -80,11 +72,11 @@ export default function DashboardPage() {
                       <div className="flex justify-end">
                         <button
                           onClick={() => addItem({ id: item.id, name: item.name, price: item.price })}
-                          className="w-12 h-12 bg-[#F8F6F2] hover:bg-primary hover:text-white text-text rounded-full flex items-center justify-center transition-colors focus:ring-2 focus:ring-primary/40 focus:outline-none active:scale-95"
+                          className="w-10 h-10 bg-[#F8F6F2] hover:bg-primary hover:text-white text-text rounded-full flex items-center justify-center transition-colors focus:ring-2 focus:ring-primary/40 focus:outline-none active:scale-95"
                           aria-label={`Add ${item.name}`}
                           id={`add-item-${item.id}`}
                         >
-                          <Plus className="w-6 h-6" />
+                          <Plus className="w-5 h-5" />
                         </button>
                       </div>
                     </div>
@@ -106,16 +98,8 @@ export default function DashboardPage() {
         {/* ── Past Orders Tab ── */}
         {activeTab === "past-orders" && <PastOrdersScreen />}
 
-        {/* ── Profile Tab (placeholder) ── */}
-        {activeTab === "profile" && (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="w-16 h-16 bg-muted/10 rounded-full flex items-center justify-center mb-4">
-              <User className="w-8 h-8 text-muted/50" />
-            </div>
-            <p className="font-bold text-[18px] text-text mb-1">Profile</p>
-            <p className="text-muted text-[15px]">Coming soon.</p>
-          </div>
-        )}
+        {/* ── Profile Tab ── */}
+        {activeTab === "profile" && <ProfileScreen />}
       </div>
 
       {/* ── Bottom Navbar ── */}

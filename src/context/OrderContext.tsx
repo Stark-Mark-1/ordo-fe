@@ -2,6 +2,12 @@
 
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
+export interface MenuItem {
+  id: number;
+  name: string;
+  price: string;
+}
+
 export interface OrderItem {
   id: number;
   name: string;
@@ -18,6 +24,11 @@ export interface PastOrder {
 }
 
 interface OrderContextType {
+  // Menu items
+  menuItems: MenuItem[];
+  addMenuItem: (item: Omit<MenuItem, "id">) => void;
+  updateMenuItem: (item: MenuItem) => void;
+  deleteMenuItem: (id: number) => void;
   // Current order
   orderItems: OrderItem[];
   addItem: (item: Omit<OrderItem, "quantity">) => void;
@@ -37,9 +48,36 @@ function generateOrderId() {
   return "ORD-" + Math.random().toString(36).slice(2, 8).toUpperCase();
 }
 
+const defaultMenuItems: MenuItem[] = [
+  { id: 1, name: "Avocado Toast",   price: "850" },
+  { id: 2, name: "Iced Latte",      price: "400" },
+  { id: 3, name: "Croissant",       price: "350" },
+  { id: 4, name: "Blueberry Muffin",price: "300" },
+  { id: 5, name: "Egg Sandwich",    price: "650" },
+  { id: 6, name: "Matcha Latte",    price: "450" },
+];
+
 export function OrderProvider({ children }: { children: ReactNode }) {
+  const [menuItems, setMenuItems] = useState<MenuItem[]>(defaultMenuItems);
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
   const [pastOrders, setPastOrders] = useState<PastOrder[]>([]);
+
+  const addMenuItem = (item: Omit<MenuItem, "id">) => {
+    setMenuItems((prev) => [
+      ...prev,
+      { ...item, id: prev.length > 0 ? Math.max(...prev.map((i) => i.id)) + 1 : 1 },
+    ]);
+  };
+
+  const updateMenuItem = (updatedItem: MenuItem) => {
+    setMenuItems((prev) =>
+      prev.map((item) => (item.id === updatedItem.id ? updatedItem : item))
+    );
+  };
+
+  const deleteMenuItem = (id: number) => {
+    setMenuItems((prev) => prev.filter((i) => i.id !== id));
+  };
 
   const addItem = (item: Omit<OrderItem, "quantity">) => {
     setOrderItems((prev) => {
@@ -91,6 +129,10 @@ export function OrderProvider({ children }: { children: ReactNode }) {
   return (
     <OrderContext.Provider
       value={{
+        menuItems,
+        addMenuItem,
+        updateMenuItem,
+        deleteMenuItem,
         orderItems,
         addItem,
         removeItem,

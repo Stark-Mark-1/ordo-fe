@@ -96,7 +96,10 @@ export default function OTPPage() {
         {/* Verify Button */}
         <button 
           onClick={handleVerify}
-          className="w-full max-w-[300px] h-[52px] bg-primary text-surface font-semibold rounded-[14px] hover:opacity-90 transition-opacity text-[16px] mb-6"
+          disabled={otp.length !== 6}
+          className={`w-full max-w-[300px] h-[52px] font-semibold rounded-[14px] transition-opacity text-[16px] mb-6 ${
+            otp.length === 6 ? "bg-primary text-surface hover:opacity-90" : "bg-muted/20 text-muted/50 cursor-not-allowed"
+          }`}
         >
           Verify OTP
         </button>
