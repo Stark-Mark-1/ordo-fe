@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fraunces, Outfit } from "next/font/google";
 import "./globals.css";
+import { AuthProvider } from "@/context/AuthContext";
 import { OrderProvider } from "@/context/OrderContext";
 import CurrentOrderBar from "@/app/components/CurrentOrderBar";
 
@@ -29,10 +30,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${fraunces.variable} ${outfit.variable} h-full antialiased`}>
       <body className="min-h-full flex w-screen overflow-x-hidden font-body bg-background text-text">
-        <OrderProvider>
-          {children}
-          <CurrentOrderBar />
-        </OrderProvider>
+        <AuthProvider>
+          <OrderProvider>
+            {children}
+            <CurrentOrderBar />
+          </OrderProvider>
+        </AuthProvider>
       </body>
     </html>
   );

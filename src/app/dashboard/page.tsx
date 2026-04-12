@@ -1,22 +1,38 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PlusSquare, History, User, Search, Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useOrder } from "@/context/OrderContext";
+import { useAuth } from "@/context/AuthContext";
 import PastOrdersScreen from "@/app/components/PastOrdersScreen";
 import ProfileScreen from "@/app/components/ProfileScreen";
 
 export default function DashboardPage() {
+  const router = useRouter();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("take-orders");
-  const { addItem, orderItems, menuItems } = useOrder();
+  const { addItem, orderItems, menuItems, isLoadingMenu } = useOrder();
+
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) router.replace("/");
+  }, [authLoading, isAuthenticated, router]);
 
   const filteredItems = menuItems.filter((item) =>
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const getItemQuantity = (id: number) =>
+  const getItemQuantity = (id: string) =>
     orderItems.find((i) => i.id === id)?.quantity ?? 0;
+
+  if (authLoading) {
+    return (
+      <main className="min-h-screen w-screen flex items-center justify-center bg-background">
+        <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-[100dvh] bg-background relative flex flex-col pt-6 pb-40">
@@ -47,51 +63,61 @@ export default function DashboardPage() {
             </div>
 
             {/* Grid */}
-            <div className="grid grid-cols-2 gap-4">
-              {filteredItems.length > 0 ? (
-                filteredItems.map((item) => {
-                  const qty = getItemQuantity(item.id);
-                  return (
-                    <div
-                      key={item.id}
-                      className="bg-surface rounded-[24px] shadow-sm p-4 flex flex-col justify-between group hover:shadow-[var(--shadow-soft)] transition-shadow border border-transparent hover:border-black/5 aspect-square relative"
-                    >
-                      {qty > 0 && (
-                        <span className="absolute top-4 right-4 w-6 h-6 rounded-full bg-primary text-white text-[12px] font-bold flex items-center justify-center z-10 shadow-sm">
-                          {qty}
-                        </span>
-                      )}
-                      <div className="flex flex-col gap-1">
-                        <span className="font-bold text-[18px] text-text leading-tight pr-8">
-                          {item.name}
-                        </span>
-                        <span className="font-body text-[16px] font-semibold text-primary">
-                          ₹{item.price}
-                        </span>
+            {isLoadingMenu ? (
+              <div className="flex items-center justify-center py-20">
+                <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-4">
+                {filteredItems.length > 0 ? (
+                  filteredItems.map((item) => {
+                    const qty = getItemQuantity(item.id);
+                    return (
+                      <div
+                        key={item.id}
+                        className="bg-surface rounded-[24px] shadow-sm p-4 flex flex-col justify-between group hover:shadow-[var(--shadow-soft)] transition-shadow border border-transparent hover:border-black/5 aspect-square relative"
+                      >
+                        {qty > 0 && (
+                          <span className="absolute top-4 right-4 w-6 h-6 rounded-full bg-primary text-white text-[12px] font-bold flex items-center justify-center z-10 shadow-sm">
+                            {qty}
+                          </span>
+                        )}
+                        <div className="flex flex-col gap-1">
+                          <span className="font-bold text-[18px] text-text leading-tight pr-8">
+                            {item.name}
+                          </span>
+                          <span className="font-body text-[16px] font-semibold text-primary">
+                            ₹{item.price}
+                          </span>
+                        </div>
+                        <div className="flex justify-end">
+                          <button
+                            onClick={() => addItem({ id: item.id, name: item.name, price: item.price })}
+                            className="w-10 h-10 bg-[#F8F6F2] hover:bg-primary hover:text-white text-text rounded-full flex items-center justify-center transition-colors focus:ring-2 focus:ring-primary/40 focus:outline-none active:scale-95"
+                            aria-label={`Add ${item.name}`}
+                            id={`add-item-${item.id}`}
+                          >
+                            <Plus className="w-5 h-5" />
+                          </button>
+                        </div>
                       </div>
-                      <div className="flex justify-end">
-                        <button
-                          onClick={() => addItem({ id: item.id, name: item.name, price: item.price })}
-                          className="w-10 h-10 bg-[#F8F6F2] hover:bg-primary hover:text-white text-text rounded-full flex items-center justify-center transition-colors focus:ring-2 focus:ring-primary/40 focus:outline-none active:scale-95"
-                          aria-label={`Add ${item.name}`}
-                          id={`add-item-${item.id}`}
-                        >
-                          <Plus className="w-5 h-5" />
-                        </button>
-                      </div>
+                    );
+                  })
+                ) : (
+                  <div className="col-span-2 w-full py-12 flex flex-col items-center justify-center text-center">
+                    <div className="w-16 h-16 bg-muted/10 rounded-full flex items-center justify-center mb-4">
+                      <Search className="w-8 h-8 text-muted/60" />
                     </div>
-                  );
-                })
-              ) : (
-                <div className="col-span-2 w-full py-12 flex flex-col items-center justify-center text-center">
-                  <div className="w-16 h-16 bg-muted/10 rounded-full flex items-center justify-center mb-4">
-                    <Search className="w-8 h-8 text-muted/60" />
+                    <p className="text-text font-bold text-[18px] mb-1">
+                      {menuItems.length === 0 ? "No menu items yet" : "No items found"}
+                    </p>
+                    <p className="text-muted text-[15px]">
+                      {menuItems.length === 0 ? "Go to Edit Menu to add items." : "Try a different search term."}
+                    </p>
                   </div>
-                  <p className="text-text font-bold text-[18px] mb-1">No items found</p>
-                  <p className="text-muted text-[15px]">Try a different search term.</p>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            )}
           </>
         )}
 

@@ -163,11 +163,19 @@ function EmptyState() {
 
 /* ─── Main screen ────────────────────────────────────────────────── */
 export default function PastOrdersScreen() {
-  const { pastOrders } = useOrder();
+  const { pastOrders, isLoadingOrders } = useOrder();
   const [sort, setSort] = useState<SortKey>("newest");
   const [selectedOrder, setSelectedOrder] = useState<PastOrder | null>(null);
 
   const sorted = useMemo(() => sortOrders(pastOrders, sort), [pastOrders, sort]);
+
+  if (isLoadingOrders) {
+    return (
+      <div className="flex-1 flex items-center justify-center py-20">
+        <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 flex flex-col h-full">

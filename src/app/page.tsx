@@ -1,18 +1,33 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { api, ApiError } from "@/lib/api";
 
 export default function Home() {
   const router = useRouter();
   const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) {
+    if (!email) return;
+    setIsLoading(true);
+    setError("");
+    try {
+      await api.post("/auth/otp/request", { email });
+      sessionStorage.setItem("ordo_pending_email", email);
       router.push("/otp");
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 429) {
+        setError("Too many requests. Please wait a moment.");
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -56,14 +71,24 @@ export default function Home() {
                      value={email} onChange={(e) => setEmail(e.target.value)}
                      className="w-full h-[56px] pl-[44px] pr-4 bg-surface rounded-[16px] shadow-[var(--shadow-soft)] text-text focus:ring-2 focus:ring-primary border border-transparent focus:border-transparent outline-none transition-all placeholder:text-[#8A736A] placeholder:opacity-70 text-[15px]" />
             </div>
-            <button type="submit" className="h-[56px] px-8 bg-primary hover:bg-[#c44e2b] text-white font-medium rounded-full transition-colors flex items-center justify-center gap-2 shadow-[var(--shadow-soft)] flex-shrink-0 text-[15px]">
-              Get Started 
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 12h14"/>
-                <path d="m12 5 7 7-7 7"/>
-              </svg>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="h-[56px] px-8 bg-primary hover:bg-[#c44e2b] disabled:opacity-60 text-white font-medium rounded-full transition-colors flex items-center justify-center gap-2 shadow-[var(--shadow-soft)] flex-shrink-0 text-[15px]"
+            >
+              {isLoading ? "Sending..." : "Get Started"}
+              {!isLoading && (
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14"/>
+                  <path d="m12 5 7 7-7 7"/>
+                </svg>
+              )}
             </button>
           </form>
+
+          {error && (
+            <p className="text-red-500 text-[14px] -mt-4 mb-4">{error}</p>
+          )}
 
           {/* Trust Badge */}
           <div className="flex items-center gap-2 mt-2 text-[14px] text-muted">

@@ -8,35 +8,48 @@ import { useRouter } from "next/navigation";
 export default function EditMenuPage() {
   const { menuItems, addMenuItem, deleteMenuItem, updateMenuItem } = useOrder();
   const [searchQuery, setSearchQuery] = useState("");
-  const [itemToDelete, setItemToDelete] = useState<number | null>(null);
+  const [itemToDelete, setItemToDelete] = useState<string | null>(null);
   const router = useRouter();
   
   // Add item state
   const [isAddingItem, setIsAddingItem] = useState(false);
   const [newItemName, setNewItemName] = useState("");
   const [newItemPrice, setNewItemPrice] = useState("");
+  const [addLoading, setAddLoading] = useState(false);
 
   // Edit item state
   const [itemToEdit, setItemToEdit] = useState<MenuItem | null>(null);
   const [editItemName, setEditItemName] = useState("");
   const [editItemPrice, setEditItemPrice] = useState("");
+  const [editLoading, setEditLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const filteredItems = menuItems.filter((item) =>
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleAddItem = () => {
+  const handleAddItem = async () => {
     if (!newItemName.trim() || !newItemPrice.trim()) return;
-    addMenuItem({ name: newItemName, price: newItemPrice });
-    setNewItemName("");
-    setNewItemPrice("");
-    setIsAddingItem(false);
+    setAddLoading(true);
+    try {
+      await addMenuItem({ name: newItemName.trim(), price: newItemPrice });
+      setNewItemName("");
+      setNewItemPrice("");
+      setIsAddingItem(false);
+    } finally {
+      setAddLoading(false);
+    }
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (itemToDelete !== null) {
-      deleteMenuItem(itemToDelete);
-      setItemToDelete(null);
+      setDeleteLoading(true);
+      try {
+        await deleteMenuItem(itemToDelete);
+        setItemToDelete(null);
+      } finally {
+        setDeleteLoading(false);
+      }
     }
   };
 
@@ -46,10 +59,15 @@ export default function EditMenuPage() {
     setEditItemPrice(item.price);
   };
 
-  const handleUpdateItem = () => {
+  const handleUpdateItem = async () => {
     if (!itemToEdit || !editItemName.trim() || !editItemPrice.trim()) return;
-    updateMenuItem({ id: itemToEdit.id, name: editItemName, price: editItemPrice });
-    setItemToEdit(null);
+    setEditLoading(true);
+    try {
+      await updateMenuItem({ id: itemToEdit.id, name: editItemName.trim(), price: editItemPrice });
+      setItemToEdit(null);
+    } finally {
+      setEditLoading(false);
+    }
   };
 
   return (
@@ -147,11 +165,12 @@ export default function EditMenuPage() {
               >
                 Cancel
               </button>
-              <button 
+              <button
                 onClick={confirmDelete}
-                className="flex-1 h-[56px] bg-[#D95D39] hover:bg-red-600 text-white font-bold text-[16px] rounded-[20px] transition-colors shadow-[var(--shadow-soft)] active:scale-[0.98]"
+                disabled={deleteLoading}
+                className="flex-1 h-[56px] bg-[#D95D39] hover:bg-red-600 disabled:opacity-60 text-white font-bold text-[16px] rounded-[20px] transition-colors shadow-[var(--shadow-soft)] active:scale-[0.98]"
               >
-                Delete
+                {deleteLoading ? "Deleting..." : "Delete"}
               </button>
             </div>
           </div>
@@ -194,12 +213,12 @@ export default function EditMenuPage() {
                 </div>
               </div>
 
-              <button 
+              <button
                 onClick={handleAddItem}
-                disabled={!newItemName.trim() || !newItemPrice.trim()}
+                disabled={!newItemName.trim() || !newItemPrice.trim() || addLoading}
                 className="w-full h-[64px] bg-primary hover:bg-[#c44e2b] disabled:opacity-50 disabled:hover:bg-primary text-white font-bold text-[18px] rounded-[22px] transition-all shadow-lg shadow-primary/20 active:scale-[0.98] flex items-center justify-center"
               >
-                Add to Menu
+                {addLoading ? "Adding..." : "Add to Menu"}
               </button>
            </div>
         </div>
@@ -239,12 +258,12 @@ export default function EditMenuPage() {
                 </div>
               </div>
 
-              <button 
+              <button
                 onClick={handleUpdateItem}
-                disabled={!editItemName.trim() || !editItemPrice.trim()}
+                disabled={!editItemName.trim() || !editItemPrice.trim() || editLoading}
                 className="w-full h-[64px] bg-primary hover:bg-[#c44e2b] disabled:opacity-50 disabled:hover:bg-primary text-white font-bold text-[18px] rounded-[22px] transition-all shadow-lg shadow-primary/20 active:scale-[0.98] flex items-center justify-center"
               >
-                Update Item
+                {editLoading ? "Updating..." : "Update Item"}
               </button>
            </div>
         </div>

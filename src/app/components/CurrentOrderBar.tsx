@@ -116,8 +116,13 @@ export default function CurrentOrderBar() {
     setPrevCount(totalItems);
   }, [totalItems]);
 
-  const handleCreateOrder = () => {
-    createOrder();        // snapshot → pastOrders, clears current
+  const handleCreateOrder = async () => {
+    try {
+      await createOrder();
+    } catch {
+      // if order creation fails, don't show success
+      return;
+    }
     setExpanded(false);
     setShowSuccess(true);
   };
