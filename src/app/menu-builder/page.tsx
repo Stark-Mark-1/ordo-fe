@@ -1,0 +1,183 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+export default function MenuBuilderPage() {
+  const router = useRouter();
+  const [newItemName, setNewItemName] = useState("");
+  const [newItemPrice, setNewItemPrice] = useState("");
+  
+  const [menuItems, setMenuItems] = useState<{ id: number; name: string; price: string; icon: string; color: string }[]>([]);
+
+  const handleAddItem = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newItemName || !newItemPrice) return;
+    
+    setMenuItems([
+      {
+        id: Date.now(),
+        name: newItemName,
+        price: parseFloat(newItemPrice).toFixed(2),
+        icon: "🍽️",
+        color: "bg-[#FDF0EA]"
+      },
+      ...menuItems
+    ]);
+    
+    setNewItemName("");
+    setNewItemPrice("");
+  };
+
+  const handleDelete = (id: number) => {
+    setMenuItems(menuItems.filter(item => item.id !== id));
+  };
+
+  return (
+    <main className="min-h-screen w-full bg-background pb-20">
+      
+      {/* Top Navigation */}
+      <header className="w-full flex items-center justify-between py-4 px-5 sm:py-6 sm:px-8 lg:px-12 bg-background sticky top-0 z-50">
+        <div className="flex items-center gap-3 sm:gap-6">
+          <Link href="/setup" className="text-text hover:text-primary transition-colors flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m15 18-6-6 6-6"/>
+            </svg>
+          </Link>
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D95D39" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="sm:w-[24px] sm:h-[24px]">
+              <path d="m20 4-4 4"/>
+              <path d="m11 13-3 3"/>
+              <path d="M4 20h2l3-3"/>
+              <path d="M7 17v-2l3-3"/>
+              <path d="M8 8V6l3-3"/>
+              <path d="M6 10H4l-3-3"/>
+            </svg>
+            <span className="font-heading font-semibold text-[18px] sm:text-[22px] tracking-tight">Ordo</span>
+          </div>
+        </div>
+        <button 
+          onClick={() => router.push('/dashboard')}
+          disabled={menuItems.length === 0}
+          className={`rounded-full px-3 py-1.5 sm:px-5 sm:py-2.5 font-semibold transition-colors shadow-sm text-[12px] sm:text-[14px] whitespace-nowrap mr-3 sm:mr-0 ${
+            menuItems.length === 0
+              ? "bg-muted/20 text-muted/50 cursor-not-allowed shadow-none"
+              : "bg-primary text-white hover:bg-[#c44e2b] cursor-pointer"
+          }`}
+        >
+          Start Taking Orders
+        </button>
+      </header>
+
+      <div className="max-w-[1100px] mx-auto px-4 sm:px-6 mt-8">
+        
+        {/* Page Title */}
+        <div className="mb-8 lg:mb-10">
+          <h1 className="font-heading text-[30px] sm:text-[38px] tracking-tight mb-2 text-text">Build Your Menu</h1>
+          <p className="text-muted text-[16px]">Add your delicious offerings to get started.</p>
+        </div>
+
+        {/* 2-Column Layout */}
+        <div className="flex flex-col lg:flex-row gap-10 items-center lg:items-start">
+          
+          {/* Left Column: Form */}
+          <div className="w-full max-w-[420px] mx-auto lg:mx-0 lg:max-w-none lg:w-[40%] bg-surface rounded-[24px] shadow-[var(--shadow-soft)] p-6 lg:p-8">
+            <h2 className="font-heading text-[22px] font-semibold mb-6">Add New Item</h2>
+            
+            <form onSubmit={handleAddItem} className="flex flex-col gap-5">
+              
+              <div className="flex flex-col gap-2">
+                <label className="text-text font-bold text-[13px] ml-1">Item Name</label>
+                <input 
+                  type="text" 
+                  value={newItemName}
+                  onChange={(e) => setNewItemName(e.target.value)}
+                  placeholder="e.g. Avocado Toast" 
+                  className="w-full h-[52px] px-4 bg-[#F8F6F2] rounded-[16px] text-text placeholder:text-[#A99790] focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all font-medium"
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="text-text font-bold text-[13px] ml-1">Price ($)</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <span className="text-[#A99790] font-medium">$</span>
+                  </div>
+                  <input 
+                    type="number" 
+                    step="0.01"
+                    value={newItemPrice}
+                    onChange={(e) => setNewItemPrice(e.target.value)}
+                    placeholder="0.00" 
+                    className="w-full h-[52px] pl-[34px] pr-4 bg-[#F8F6F2] rounded-[16px] text-text placeholder:text-[#A99790] focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all font-medium"
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2 mb-2">
+                <label className="text-text font-bold text-[13px] ml-1">Photo</label>
+                <div className="h-[120px] rounded-[16px] border-2 border-dashed border-muted/30 bg-[#F8F6F2] flex flex-col items-center justify-center cursor-pointer hover:border-primary/40 hover:bg-[#FDF0EA]/50 transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#A99790" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mb-2">
+                    <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
+                    <circle cx="12" cy="13" r="3"/>
+                  </svg>
+                  <span className="text-[#A99790] text-[13px] font-medium">Drag & drop or click to upload</span>
+                </div>
+              </div>
+
+              <button 
+                type="submit"
+                className="w-full h-[56px] bg-[#FDF0EA] hover:bg-[#F9E2D8] text-primary font-bold rounded-full transition-colors mt-2 text-[15px]"
+              >
+                Add Item
+              </button>
+            </form>
+          </div>
+
+          {/* Right Column: List */}
+          <div className="w-full lg:w-[60%] flex flex-col">
+            <h3 className="font-heading text-[20px] font-semibold mb-6 opacity-90">Menu Preview</h3>
+            
+            <div className="flex flex-col gap-4">
+              {menuItems.map((item) => (
+                <div key={item.id} className="bg-surface rounded-[20px] shadow-[0_4px_20px_rgba(44,26,20,0.03)] p-4 flex items-center justify-between group hover:shadow-[var(--shadow-soft)] transition-shadow">
+                  <div className="flex items-center gap-5">
+                    {/* Placeholder Image Square */}
+                    <div className={`w-[80px] h-[80px] rounded-[16px] ${item.color} flex items-center justify-center text-[38px] shadow-sm`}>
+                      {item.icon}
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <span className="font-bold text-[17px] text-text">{item.name}</span>
+                      <span className="font-body text-[15px] font-semibold text-primary">${item.price}</span>
+                    </div>
+                  </div>
+                  
+                  <button 
+                    onClick={() => handleDelete(item.id)}
+                    className="p-3 text-muted/50 hover:text-red-500 hover:bg-red-50 rounded-full transition-all opacity-0 group-hover:opacity-100 mr-2 focus:opacity-100"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M3 6h18"/>
+                      <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                      <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                      <line x1="10" y1="11" x2="10" y2="17"/>
+                      <line x1="14" y1="11" x2="14" y2="17"/>
+                    </svg>
+                  </button>
+                </div>
+              ))}
+              
+              {menuItems.length === 0 && (
+                <div className="w-full h-[200px] flex flex-col items-center justify-center rounded-[20px] border-2 border-dashed border-muted/20 text-muted/60 font-medium">
+                  No items added yet.
+                </div>
+              )}
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+  );
+}
