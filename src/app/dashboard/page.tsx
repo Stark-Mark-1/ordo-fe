@@ -13,7 +13,7 @@ export default function DashboardPage() {
   const { isAuthenticated, isLoading: authLoading } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("take-orders");
-  const { addItem, orderItems, menuItems, isLoadingMenu } = useOrder();
+  const { addItem, orderItems, menuItems, isLoadingMenu, isLoadingOrders } = useOrder();
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) router.replace("/");
@@ -26,7 +26,7 @@ export default function DashboardPage() {
   const getItemQuantity = (id: string) =>
     orderItems.find((i) => i.id === id)?.quantity ?? 0;
 
-  if (authLoading) {
+  if (authLoading || isLoadingMenu || isLoadingOrders) {
     return (
       <main className="min-h-screen w-screen flex items-center justify-center bg-background">
         <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
@@ -63,13 +63,8 @@ export default function DashboardPage() {
             </div>
 
             {/* Grid */}
-            {isLoadingMenu ? (
-              <div className="flex items-center justify-center py-20">
-                <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 gap-4">
-                {filteredItems.length > 0 ? (
+            <div className="grid grid-cols-2 gap-4">
+              {filteredItems.length > 0 ? (
                   filteredItems.map((item) => {
                     const qty = getItemQuantity(item.id);
                     return (
@@ -117,7 +112,6 @@ export default function DashboardPage() {
                   </div>
                 )}
               </div>
-            )}
           </>
         )}
 

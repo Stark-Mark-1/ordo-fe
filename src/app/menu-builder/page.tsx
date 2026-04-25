@@ -17,6 +17,14 @@ export default function MenuBuilderPage() {
   const [finishing, setFinishing] = useState(false);
   const [addError, setAddError] = useState("");
 
+  if (isLoadingMenu) {
+    return (
+      <main className="min-h-screen w-screen flex items-center justify-center bg-background">
+        <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+      </main>
+    );
+  }
+
   const handleAddItem = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newItemName.trim() || !newItemPrice.trim()) return;
@@ -155,13 +163,9 @@ export default function MenuBuilderPage() {
           <div className="w-full lg:w-[60%] flex flex-col">
             <h3 className="font-heading text-[20px] font-semibold mb-6 opacity-90">Menu Preview</h3>
 
-            {isLoadingMenu ? (
-              <div className="w-full h-[200px] flex items-center justify-center">
-                <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-              </div>
-            ) : (
-              <div className="flex flex-col gap-4">
-                {menuItems.map((item) => (
+            {/* Menu List */}
+            <div className="flex flex-col gap-4">
+              {menuItems.map((item) => (
                   <div key={item.id} className="bg-surface rounded-[20px] shadow-[0_4px_20px_rgba(44,26,20,0.03)] p-4 flex items-center justify-between group hover:shadow-[var(--shadow-soft)] transition-shadow">
                     <div className="flex items-center gap-5">
                       <div className="w-[80px] h-[80px] rounded-[16px] bg-[#FDF0EA] flex items-center justify-center text-[38px] shadow-sm">
@@ -194,9 +198,7 @@ export default function MenuBuilderPage() {
                   </div>
                 )}
               </div>
-            )}
           </div>
-
         </div>
       </div>
     </main>

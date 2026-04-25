@@ -109,12 +109,16 @@ export default function CurrentOrderBar() {
 
   useEffect(() => {
     if (totalItems > 0 && prevCount === 0) {
-      setAnimatingIn(true);
-      setTimeout(() => setAnimatingIn(false), 50);
+      queueMicrotask(() => {
+        setAnimatingIn(true);
+        setTimeout(() => setAnimatingIn(false), 50);
+      });
     }
-    if (totalItems === 0) setExpanded(false);
-    setPrevCount(totalItems);
-  }, [totalItems]);
+    if (totalItems === 0) {
+      queueMicrotask(() => setExpanded(false));
+    }
+    queueMicrotask(() => setPrevCount(totalItems));
+  }, [totalItems, prevCount]);
 
   const handleCreateOrder = async () => {
     try {

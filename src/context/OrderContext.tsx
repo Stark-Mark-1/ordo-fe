@@ -76,6 +76,7 @@ function adaptMenuItem(raw: any): MenuItem {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function adaptOrder(raw: any): PastOrder {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const items: OrderItem[] = raw.lineItems.map((li: any) => ({
     id: li.menuItemId ?? li.id,
     name: li.name,
@@ -107,6 +108,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     if (!storeId) return;
     setIsLoadingMenu(true);
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const data = await api.get<{ items: any[] }>(`/stores/${storeId}/menu`);
       setMenuItems(data.items.map(adaptMenuItem));
     } catch {
@@ -121,6 +123,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     if (!storeId) return;
     setIsLoadingOrders(true);
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const data = await api.get<{ orders: any[] }>(
         `/stores/${storeId}/orders`
       );
@@ -148,6 +151,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
 
   const addMenuItem = async (item: Omit<MenuItem, "id">) => {
     if (!storeId) return;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const data = await api.post<{ item: any }>(`/stores/${storeId}/menu`, {
       name: item.name,
       description: item.description,
@@ -158,6 +162,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
 
   const updateMenuItem = async (item: MenuItem) => {
     if (!storeId) return;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const data = await api.patch<{ item: any }>(
       `/stores/${storeId}/menu/${item.id}`,
       {
@@ -220,6 +225,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
   const createOrder = async () => {
     if (!storeId || orderItems.length === 0) return;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const data = await api.post<{ order: any }>(`/stores/${storeId}/orders`, {
       items: orderItems.map((i) => ({
         menuItemId: i.id,

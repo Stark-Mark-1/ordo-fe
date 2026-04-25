@@ -6,10 +6,12 @@ import { useOrder, MenuItem } from "@/context/OrderContext";
 import { useRouter } from "next/navigation";
 
 export default function EditMenuPage() {
-  const { menuItems, addMenuItem, deleteMenuItem, updateMenuItem } = useOrder();
+  const { menuItems, addMenuItem, deleteMenuItem, updateMenuItem, isLoadingMenu } = useOrder();
   const [searchQuery, setSearchQuery] = useState("");
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
   const router = useRouter();
+
+
   
   // Add item state
   const [isAddingItem, setIsAddingItem] = useState(false);
@@ -27,6 +29,14 @@ export default function EditMenuPage() {
   const filteredItems = menuItems.filter((item) =>
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  if (isLoadingMenu) {
+    return (
+      <main className="min-h-[100dvh] w-full flex items-center justify-center bg-background">
+        <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+      </main>
+    );
+  }
 
   const handleAddItem = async () => {
     if (!newItemName.trim() || !newItemPrice.trim()) return;
